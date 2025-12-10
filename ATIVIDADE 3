@@ -1,0 +1,159 @@
+import os
+from dataclasses import dataclass
+
+lista_aviao = []
+lista_de_passagem = []
+assentos = [0] * 4
+
+@dataclass
+class reserva_aviao:
+    numero_aviao: int
+    nome_passageiro: str
+    
+    def mostrar_dados(self):
+        print(f"Passageiro: {self.nome_passageiro} - Avião: {self.numero_aviao}")
+
+
+# 1. Cadastrar aviões
+def adicionar_aviao():
+    print("\n--- Cadastrar Aviões ---")
+    lista_aviao.clear()
+    for i in range(4):
+        numero_aviao = int(input(f"Digite o número do avião {i+1}: "))
+        lista_aviao.append(numero_aviao)
+    print("\nAviões cadastrados com sucesso!")
+    print("Aviões:", lista_aviao)
+
+
+# 2. Cadastro de assentos
+def cadastrando_assentos():
+    if len(lista_aviao) < 4:
+        print("Cadastre os aviões primeiro (Opção 1).")
+        return
+    
+    print("\n--- Cadastro de Assentos Disponíveis ---")
+    for i in range(4):
+        quantidade = int(input(f"Quantidade de assentos do avião {lista_aviao[i]}: "))
+        assentos[i] = quantidade
+    print("Assentos cadastrados com sucesso!")
+
+
+# Função auxiliar: verificar se avião existe
+def aviao_existe(numero):
+    return numero in lista_aviao
+
+
+# 3. Fazer reserva
+def fazer_reserva():
+    if len(lista_aviao) < 4:
+        print("Cadastre os aviões primeiro (Opção 1).")
+        return
+    
+    nome = input("Nome do passageiro: ")
+    numero = int(input("Número do avião: "))
+    
+    if numero not in lista_aviao:
+        print("Avião não encontrado!")
+        return
+    
+    indice = lista_aviao.index(numero)
+    
+    if assentos[indice] <= 0:
+        print("Não há assentos disponíveis nesse avião!")
+        return
+    
+    reserva = reserva_aviao(numero, nome)
+    lista_de_passagem.append(reserva)
+    assentos[indice] -= 1
+
+    print("Reserva realizada com sucesso!")
+
+
+# 4. Buscar reservas por número do avião
+def encontrar_passagem_pelo_aviao():
+    print("\n--- Consulta de Reservas por Avião ---")
+    
+    if len(lista_aviao) < 4:
+        print("Cadastre os aviões primeiro.")
+        return
+    
+    numero = int(input("Informe o número do avião: "))
+
+    if not aviao_existe(numero):
+        print("Avião não encontrado!")
+        return
+    
+    print(f"\nReservas do avião {numero}:")
+    encontrado = False
+    
+    for reserva in lista_de_passagem:
+        if reserva.numero_aviao == numero:
+            reserva.mostrar_dados()
+            encontrado = True
+    
+    if not encontrado:
+        print("Não há reservas para este avião.")
+
+
+# 5. Buscar reservas por passageiro
+def encontrar_passageiro():
+    nome = input("\nDigite o nome do passageiro: ").lower()
+    resultados = []
+
+    for passagem in lista_de_passagem:
+        if passagem.nome_passageiro.lower() == nome:
+            resultados.append(passagem)
+
+    if not resultados:
+        print("Não há reservas realizadas para este passageiro!")
+    else:
+        print("\nReservas encontradas:")
+        for r in resultados:
+            r.mostrar_dados()
+
+
+# 6. Listar todas as reservas
+def listar_todas():
+    print("\n--- Todas as Reservas ---")
+    if not lista_de_passagem:
+        print("Nenhuma reserva feita ainda.")
+        return
+
+    for reserva in lista_de_passagem:
+        reserva.mostrar_dados()
+
+
+# MENU PRINCIPAL
+def menu():
+    while True:
+        print("\n===== MENU PRINCIPAL =====")
+        print("1 - Cadastrar Aviões")
+        print("2 - Cadastrar Assentos")
+        print("3 - Fazer Reserva")
+        print("4 - Consultar Reservas por Avião")
+        print("5 - Consultar Reservas por Passageiro")
+        print("6 - Listar Todas as Reservas")
+        print("0 - Sair")
+        
+        opcao = input("Escolha uma opção: ")
+
+        if opcao == "1":
+            adicionar_aviao()
+        elif opcao == "2":
+            cadastrando_assentos()
+        elif opcao == "3":
+            fazer_reserva()
+        elif opcao == "4":
+            encontrar_passagem_pelo_aviao()
+        elif opcao == "5":
+            encontrar_passageiro()
+        elif opcao == "6":
+            listar_todas()
+        elif opcao == "0":
+            print("Encerrando o sistema...")
+            break
+        else:
+            print("Opção inválida! Tente novamente.")
+
+
+menu()
